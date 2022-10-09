@@ -89,6 +89,17 @@ class Firework:
             if self.y <= self.explode_height:
                 self.explode()
 
+        projectiles_to_remove = []
+        for projectile in self.projectiles:
+            projectile.move()
+            if projectile.x >= max_width or projectile.x < 0:
+                projectiles_to_remove.append(projectile)
+            elif projectile.y >= max_height or projectile.y < 0:
+                projectiles_to_remove.append(projectile)
+
+        for projectile in projectiles_to_remove:
+            self.projectiles.remove(projectile)
+
     def draw(self, win):
         if not self.exploded:
             pygame.draw.circle(win, self.color, (self.x, self.y), self.RADIUS)
