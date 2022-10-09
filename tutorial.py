@@ -70,7 +70,11 @@ class Firework:
     def explode(self):
         self.exploded = True
         num_projectiles = random.randrange(self.MIN_PROJECTILES, self.MAX_PROJECTILES)
-        self.create_circular_projectiles(num_projectiles)
+
+        if random.randint(0, 1) == 0:
+            self.create_circular_projectiles(num_projectiles)
+        else:
+            self.create_star_projectiles()
 
     def create_circular_projectiles(self, num_projectiles):
         angle_dif = math.pi * 2 / num_projectiles
@@ -82,6 +86,18 @@ class Firework:
             color = random.choice(COLORS)
             self.projectiles.append(Projectile(self.x, self.y, x_vel, y_vel, color))
             current_angle += angle_dif
+
+    def create_star_projectiles(self):
+        angle_diff = math.pi / 4
+        current_angle = 0
+        for i in range(1, 65):
+            vel = self.PROJECTILE_VEL + (i % 8)
+            x_vel = math.sin(current_angle) * vel
+            y_vel = math.cos(current_angle) * vel
+            color = random.choice(COLORS)
+            self.projectiles.append(Projectile(self.x, self.y, x_vel, y_vel, color))
+            if i % 8 == 0:
+                current_angle += angle_diff
 
     def move(self, max_width, max_height):
         if not self.exploded:
@@ -142,7 +158,7 @@ class Launcher:
 
         fireworks_to_remove = []
         for firework in self.fireworks:
-            firework.move(max_width,max_height)
+            firework.move(max_width, max_height)
             if firework.exploded and len(firework.projectiles) == 0:
                 fireworks_to_remove.append(firework)
 
@@ -163,7 +179,11 @@ def main():
     run = True
     clock = pygame.time.Clock()
 
-    launchers = [Launcher(100, HEIGHT - Launcher.HEIGHT, 3000)]
+    launchers = [Launcher(100, HEIGHT - Launcher.HEIGHT, 3000),
+                 Launcher(300, HEIGHT - Launcher.HEIGHT, 4000),
+                 Launcher(500, HEIGHT - Launcher.HEIGHT, 2000),
+                 Launcher(700, HEIGHT - Launcher.HEIGHT, 5000)
+                 ]
 
     while run:
         clock.tick(FPS)
